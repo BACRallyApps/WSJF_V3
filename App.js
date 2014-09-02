@@ -5,11 +5,17 @@ Ext.define('CustomApp', {
     launch: function() {
         this.releaseCombobox = this.add({
             xtype: "rallyreleasecombobox",
+            allowNoEntry: true,
             listeners: {
                 ready: this._onReleaseComboboxLoad,
                 change: this._onReleaseComboboxChanged,
                 scope: this
             }
+        });
+        
+        this.piCombobox = this.add( {
+                xtype: 'rallyportfolioitemtypecombobox',
+                scope: this
         });
     },
     _onReleaseComboboxLoad: function() {
@@ -60,7 +66,7 @@ Ext.define('CustomApp', {
                 if (oldScore !== score) { // only update if score changed
                     feature.set('ValueScore', score); // set score value in db
                     feature.save();
-                    console.log("Setting a new score", score);
+                    //console.log("Setting a new score", score);
                 }
             }
         });
@@ -113,7 +119,7 @@ Ext.define('CustomApp', {
             this._createGrid(myStore);
         }
         else {
-            console.log("Refreshing Grid");
+            //console.log("Refreshing Grid");
             this._myGrid.reconfigure(myStore);
         }
     }

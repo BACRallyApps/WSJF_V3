@@ -13,11 +13,22 @@
         "@guessTabSize": "true"
     },
     "language": {
-        "@warnLevel": "info"
+        "@warnLevel": "info",
+        "@instanceHighlight": "true",
+        "@undeclaredVars": "true",
+        "@unusedFunctionArgs": "false"
     },
     "build": {
         "@path": "/.c9/builders",
         "@saveall": "true",
         "@builder": "auto"
+    },
+    "share": {
+        "@preview": false,
+        "@app": false,
+        "@useOwnerSettings": false
+    },
+    "find.nak": {
+        "@searchLimit": 100
     }
 }

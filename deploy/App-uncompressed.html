@@ -14,11 +14,17 @@
     launch: function() {
         this.releaseCombobox = this.add({
             xtype: "rallyreleasecombobox",
+            allowNoEntry: true,
             listeners: {
                 ready: this._onReleaseComboboxLoad,
                 change: this._onReleaseComboboxChanged,
                 scope: this
             }
+        });
+        
+        this.piCombobox = this.add( {
+                xtype: 'rallyportfolioitemtypecombobox',
+                scope: this
         });
     },
     _onReleaseComboboxLoad: function() {
@@ -69,7 +75,7 @@
                 if (oldScore !== score) { // only update if score changed
                     feature.set('ValueScore', score); // set score value in db
                     feature.save();
-                    console.log("Setting a new score", score);
+                    //console.log("Setting a new score", score);
                 }
             }
         });
@@ -98,7 +104,7 @@
                 {
                     text: "Score",
                     dataIndex: "ValueScore",
-                    enableEditing: false,
+                    editor: null,
                 }
             ]
         }), this.add(this._myGrid);
@@ -122,7 +128,7 @@
             this._createGrid(myStore);
         }
         else {
-            console.log("Refreshing Grid");
+            //console.log("Refreshing Grid");
             this._myGrid.reconfigure(myStore);
         }
     }
@@ -140,10 +146,11 @@
 
     <style type="text/css">
         .app {
-     /* Add app styles here */
+  /* Add app styles here */
 }
 
     </style>
 </head>
-<body></body>
+<body>
+</body>
 </html>
