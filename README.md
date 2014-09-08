@@ -3,7 +3,7 @@ WSJF_V3
 
 ## Overview
 Weighted Shortest Job First Grid This app displays a grid that shows the values
-used to calculate the WSJF score, and then calculate the score. The values in
+used to calculate the WSJF score, and then calculate the score. The values inadd 
 the grid are editable, but the score is not as it is calculated based on the
 values. The columns are sortable, so for example if you want to sort by Score, 
 just click on the "Score" column.

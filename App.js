@@ -53,16 +53,16 @@ Ext.define('CustomApp', {
     },
     _calculateScore: function(records) {
         Ext.Array.each(records, function(feature) {
-            console.log("feature", feature.data);
+            //console.log("feature", feature.data);
             var jobSize = feature.data.JobSize;
             var timeValue = feature.data.TimeCriticality;
             var OERR = feature.data.RROEValue;
             var userValue = feature.data.UserBusinessValue;
             var oldScore = feature.data.ValueScore;
-            console.log( "Old Score ", oldScore);
+            //console.log( "Old Score ", oldScore);
             if (jobSize > 0) { // jobSize is the denominator so make sure it's not 0
                 var score = Math.floor(((userValue + timeValue + OERR ) / jobSize) + 0.5);
-                console.log("newscore: ", score);
+                //console.log("newscore: ", score);
                 if (oldScore !== score) { // only update if score changed
                     feature.set('ValueScore', score); // set score value in db
                     feature.save();
@@ -95,7 +95,7 @@ Ext.define('CustomApp', {
                 {
                     text: "Score",
                     dataIndex: "ValueScore",
-                    editor: null,
+                    editor: null
                 }
             ]
         }), this.add(this._myGrid);

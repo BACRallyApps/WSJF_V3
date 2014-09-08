@@ -1,8 +1,8 @@
 {
    "name": "WSJF_V3",
    "className": "CustomApp",
-   "server": "https://demo-east.rallydev.com",
-   "sdk": "2.0rc2",
+   "server": "https://rally1.rallydev.com",
+   "sdk": "2.0rc3",
    "javascript": [
       "App.js"
    ],
