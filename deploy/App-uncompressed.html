@@ -21,12 +21,8 @@
                 scope: this
             }
         });
-        
-        this.piCombobox = this.add( {
-                xtype: 'rallyportfolioitemtypecombobox',
-                scope: this
-        });
     },
+
     _onReleaseComboboxLoad: function() {
         var query = this.releaseCombobox.getQueryFromSelected();
         this._loadFeatures(query);
@@ -74,7 +70,7 @@
                 //console.log("newscore: ", score);
                 if (oldScore !== score) { // only update if score changed
                     feature.set('ValueScore', score); // set score value in db
-                    feature.save();
+                    //feature.save(); SDF: used to need this, now it causes a concurrency error :/
                     //console.log("Setting a new score", score);
                 }
             }
@@ -108,27 +104,12 @@
                 }
             ]
         }), this.add(this._myGrid);
-        
-        // override the event publish to prevent random refreshes of the whole app when the cell changes
-        var celledit = this._myGrid.plugins[0];
-        var oldPub = celledit.publish;
-        var newPub = function(event, varargs) {
-            if (event !== "objectupdate") {
-                oldPub.apply(this, arguments);
-            }
-            else {
-                // no-op
-            }
-        };
-
-        celledit.publish = Ext.bind(newPub, celledit);
     },
     _updateGrid: function(myStore) {
         if (this._myGrid === undefined) {
             this._createGrid(myStore);
         }
         else {
-            //console.log("Refreshing Grid");
             this._myGrid.reconfigure(myStore);
         }
     }
