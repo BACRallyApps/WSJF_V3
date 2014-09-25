@@ -7,12 +7,6 @@ Ext.define('CustomApp', {
     //items:{ html:'<a href="https://help.rallydev.com/apps/2.0rc2/doc/">App SDK 2.0rc2 Docs</a>'},
     launch: function() {
 
-        if (this.getSetting("useAlternateJobSizeField")===true)
-            this.jobSizeField = this.getSetting("AlternateJobSizeField");
-        else
-            this.jobSizeField = "JobSize";
-
-
         this.releaseCombobox = this.add({
             xtype: "rallyreleasecombobox",
             allowNoEntry: true,
@@ -27,35 +21,23 @@ Ext.define('CustomApp', {
     getSettingsFields: function() {
         var values = [
             {
-                name: 'useAlternateJobSizeField',
-                xtype: 'rallycheckboxfield',
-                label : "Use Custom Job Size Field"
-            },
-            {
                 name: 'useExecutiveMandateField',
                 xtype: 'rallycheckboxfield',
                 label : "Use Custom Executive Mandate Field"
-            },
-            {
-                name: 'AlternateJobSizeField',
-                xtype: 'rallytextfield',
-                label : "Alternative Job Size Field"
             },
             {
                 name: 'ExecutiveMandateField',
                 xtype: 'rallytextfield',
                 label : "Executive Mandate Field"
             }
-            ];
+        ];
 
         return values;
     },
 
     config: {
         defaultSettings : {
-            useAlternateJobSizeField : false,
             useExecutiveMandateField : false,
-            AlternateJobSizeField : 'c_JobSize1',
             ExecutiveMandateField : 'c_ExecutiveMandate'
         }
     },
@@ -76,7 +58,7 @@ Ext.define('CustomApp', {
     },
     _loadFeatures: function(query) {
 
-        var fetch = ["Name", "FormattedID", "Release", "TimeCriticality", "RROEValue", "UserBusinessValue", "ValueScore", this.jobSizeField ];
+        var fetch = ["Name", "FormattedID", "Release", "TimeCriticality", "RROEValue", "UserBusinessValue", "WSJFScore", "JobSize" ];
 
         if (this.getSetting("useExecutiveMandateField"))
             fetch.push(this.getSetting("ExecutiveMandateField"));
@@ -107,24 +89,24 @@ Ext.define('CustomApp', {
 
         Ext.Array.each(records, function(feature) {
             //console.log("feature", feature.data);
-            // var jobSize = feature.data.JobSize;
-            var jobSize = feature.data[that.jobSizeField];
+            var jobSize = feature.data.JobSize;
             var execMandate = that.getSetting("useExecutiveMandateField")===true ? feature.data[that.getSetting("ExecutiveMandateField")] : 1;
             execMandate = _.isUndefined(execMandate) || _.isNull(execMandate) || execMandate === 0 ? 1 : execMandate;
             // console.log("jobsize",jobSize,"execMandate",execMandate);
             var timeValue = feature.data.TimeCriticality;
             var OERR = feature.data.RROEValue;
             var userValue = feature.data.UserBusinessValue;
-            var oldScore = feature.data.ValueScore;
+            var oldScore = feature.data.WSJFScore;
             //console.log( "Old Score ", oldScore);
             if (jobSize > 0) { // jobSize is the denominator so make sure it's not 0
                 // var score = ((userValue + timeValue + OERR ) / jobSize);
                 var score = ( ((userValue + timeValue + OERR ) * execMandate) / jobSize);
-                score = Math.floor( score + 0.5 );
+                // score = Math.floor( score + 0.5 );
+                score = Math.round(score * 100) / 100
                 // var score = Math.floor(((userValue + timeValue + OERR ) / jobSize) + 0.5);
                 //console.log("newscore: ", score);
                 if (oldScore !== score) { // only update if score changed
-                    feature.set('ValueScore', score); // set score value in db
+                    feature.set('WSJFScore', score); // set score value in db
                     //feature.save(); SDF: used to need this, now it causes a concurrency error :/
                     //console.log("Setting a new score", score);
                 }
@@ -153,11 +135,11 @@ Ext.define('CustomApp', {
                 }, 
                 // "TimeCriticality", "RROEValue", "UserBusinessValue", "JobSize", 
                 "TimeCriticality", "RROEValue", "UserBusinessValue", 
-                this.jobSizeField, 
+                "JobSize", 
                 this.getSetting("useExecutiveMandateField")===true ? this.getSetting("ExecutiveMandateField") : null,
                 {
                     text: "Score",
-                    dataIndex: "ValueScore",
+                    dataIndex: "WSJFScore",
                     editor: null
                 }
             ]
