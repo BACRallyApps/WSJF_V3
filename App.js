@@ -7,6 +7,16 @@ Ext.define('CustomApp', {
     //items:{ html:'<a href="https://help.rallydev.com/apps/2.0rc2/doc/">App SDK 2.0rc2 Docs</a>'},
     launch: function() {
 
+        var that = this;
+
+        // console.log(that.getSettings());
+
+        that.TimeCriticalityField = that.getSetting('TimeCriticalityField');
+        that.RROEValueField = that.getSetting('RROEValueField');
+        that.UserBusinessValueField = that.getSetting('UserBusinessValueField');
+        that.WSJFScoreField = that.getSetting('WSJFScoreField');
+        that.JobSizeField = that.getSetting('JobSizeField');
+
         this.releaseCombobox = this.add({
             xtype: "rallyreleasecombobox",
             allowNoEntry: true,
@@ -29,7 +39,35 @@ Ext.define('CustomApp', {
                 name: 'ExecutiveMandateField',
                 xtype: 'rallytextfield',
                 label : "Executive Mandate Field"
-            }
+            },
+            // "TimeCriticality", "RROEValue", "UserBusinessValue", "WSJFScore", "JobSize"
+            {
+                name: 'TimeCriticalityField',
+                xtype: 'rallytextfield',
+                label : "TimeCriticality Field"
+            },
+            {
+                name: 'RROEValueField',
+                xtype: 'rallytextfield',
+                label : "RROEValue Field"
+            },
+            {
+                name: 'UserBusinessValueField',
+                xtype: 'rallytextfield',
+                label : "UserBusinessValue Field"
+            },
+            {
+                name: 'WSJFScoreField',
+                xtype: 'rallytextfield',
+                label : "WSJFScore Field"
+            },
+            {
+                name: 'JobSizeField',
+                xtype: 'rallytextfield',
+                label : "JobSize Field"
+            },
+
+
         ];
 
         return values;
@@ -38,7 +76,12 @@ Ext.define('CustomApp', {
     config: {
         defaultSettings : {
             useExecutiveMandateField : false,
-            ExecutiveMandateField : 'c_ExecutiveMandate'
+            ExecutiveMandateField : 'c_ExecutiveMandate',
+            TimeCriticalityField : 'TimeCriticality',
+            RROEValueField : 'RROEValue',
+            UserBusinessValueField : 'UserBusinessValue',
+            WSJFScoreField : 'WSJFScore',
+            JobSizeField : 'JobSize'
         }
     },
 
@@ -58,7 +101,17 @@ Ext.define('CustomApp', {
     },
     _loadFeatures: function(query) {
 
-        var fetch = ["Name", "FormattedID", "Release", "TimeCriticality", "RROEValue", "UserBusinessValue", "WSJFScore", "JobSize" ];
+        var that = this;
+
+        // var fetch = ["Name", "FormattedID", "Release", "TimeCriticality", "RROEValue", "UserBusinessValue", "WSJFScore", "JobSize" ];
+        var fetch = ["Name", "FormattedID", "Release" ];
+
+        fetch.push(that.TimeCriticalityField);
+        fetch.push(that.RROEValueField);
+        fetch.push(that.UserBusinessValueField);
+        fetch.push(that.WSJFScoreField);
+        fetch.push(that.JobSizeField);
+
 
         if (this.getSetting("useExecutiveMandateField"))
             fetch.push(this.getSetting("ExecutiveMandateField"));
@@ -93,10 +146,17 @@ Ext.define('CustomApp', {
             var execMandate = that.getSetting("useExecutiveMandateField")===true ? feature.data[that.getSetting("ExecutiveMandateField")] : 1;
             execMandate = _.isUndefined(execMandate) || _.isNull(execMandate) || execMandate === 0 ? 1 : execMandate;
             // console.log("jobsize",jobSize,"execMandate",execMandate);
-            var timeValue = feature.data.TimeCriticality;
-            var OERR = feature.data.RROEValue;
-            var userValue = feature.data.UserBusinessValue;
-            var oldScore = feature.data.WSJFScore;
+            
+            // var timeValue = feature.data.TimeCriticality;
+            // var OERR = feature.data.RROEValue;
+            // var userValue = feature.data.UserBusinessValue;
+            // var oldScore = feature.data.WSJFScore;
+
+            var timeValue = feature.data[that.TimeCriticalityField];
+            var OERR      = feature.data[that.RROEValueField];
+            var userValue = feature.data[that.UserBusinessValueField];
+            var oldScore  = feature.data[that.WSJFScoreField];
+
             //console.log( "Old Score ", oldScore);
             if (jobSize > 0) { // jobSize is the denominator so make sure it's not 0
                 // var score = ((userValue + timeValue + OERR ) / jobSize);
@@ -106,7 +166,9 @@ Ext.define('CustomApp', {
                 // var score = Math.floor(((userValue + timeValue + OERR ) / jobSize) + 0.5);
                 //console.log("newscore: ", score);
                 if (oldScore !== score) { // only update if score changed
-                    feature.set('WSJFScore', score); // set score value in db
+                    // feature.set('WSJFScore', score); // set score value in db
+                    feature.set(that.WSJFScoreField, score); // set score value in db
+
                     //feature.save(); SDF: used to need this, now it causes a concurrency error :/
                     //console.log("Setting a new score", score);
                 }
@@ -114,6 +176,9 @@ Ext.define('CustomApp', {
         });
     },
     _createGrid: function(myStore) {
+
+        var that = this;
+
         this._myGrid = Ext.create("Rally.ui.grid.Grid", {
             xtype: "rallygrid",
             title: "Feature Scoring Grid",
@@ -134,12 +199,35 @@ Ext.define('CustomApp', {
                     flex: 2
                 }, 
                 // "TimeCriticality", "RROEValue", "UserBusinessValue", "JobSize", 
-                "TimeCriticality", "RROEValue", "UserBusinessValue", 
-                "JobSize", 
+                // "TimeCriticality", "RROEValue", "UserBusinessValue", "JobSize", 
+
+                // that.TimeCriticalityField, 
+                // that.RROEValueField, 
+                // that.UserBusinessValueField, 
+                // that.JobSizeField, 
+                {
+                    text : 'TimeCriticality',
+                    dataIndex : that.TimeCriticalityField
+                },
+                {
+                    text : 'RROE Value',
+                    dataIndex : that.RROEValueField
+                },
+                {
+                    text : 'User Business Value',
+                    dataIndex : that.UserBusinessValueField
+                },
+                {
+                    text : 'Job Size',
+                    dataIndex : that.JobSizeField
+                },
+
+
                 this.getSetting("useExecutiveMandateField")===true ? this.getSetting("ExecutiveMandateField") : null,
                 {
                     text: "Score",
-                    dataIndex: "WSJFScore",
+                    // dataIndex: "WSJFScore",
+                    dataIndex : that.WSJFScoreField,
                     editor: null
                 }
             ]
