@@ -142,7 +142,8 @@ Ext.define('CustomApp', {
 
         Ext.Array.each(records, function(feature) {
             //console.log("feature", feature.data);
-            var jobSize = feature.data.JobSize;
+            // var jobSize = feature.data.JobSize;
+            var jobSize = feature.data[that.JobSizeField];
             var execMandate = that.getSetting("useExecutiveMandateField")===true ? feature.data[that.getSetting("ExecutiveMandateField")] : 1;
             execMandate = _.isUndefined(execMandate) || _.isNull(execMandate) || execMandate === 0 ? 1 : execMandate;
             // console.log("jobsize",jobSize,"execMandate",execMandate);
